@@ -39,7 +39,7 @@ class Picarx(object):
     TIMEOUT = 0.02
 
     def __init__(self):
-        atexit.register(self.stop)
+        atexit.register(self.cleanup)
         self.dir_servo_pin = Servo(PWM('P2'))
         self.camera_servo_pin1 = Servo(PWM('P0'))
         self.camera_servo_pin2 = Servo(PWM('P1'))
@@ -216,11 +216,9 @@ class Picarx(object):
             self.set_motor_speed(1, speed)
             self.set_motor_speed(2, -1*speed)
 
-    # @log_on_end(logging.DEBUG, "Motors stopped successfully")
     def stop(self):
         self.set_motor_speed(1, 0)
         self.set_motor_speed(2, 0)
-
 
     def Get_distance(self):
         timeout=0.01
@@ -248,28 +246,14 @@ class Picarx(object):
         #print(cm)
         return cm
 
+    @log_on_end(logging.DEBUG, "Motors stopped successfully after unclean exit")
+    def cleanup(self):
+        self.stop()
 
 if __name__ == "__main__":
     px = Picarx()
     px.set_dir_servo_angle(-20)
     time.sleep(1)
     px.forward(50)
-    time.sleep(0.5)
+    time.sleep(10)
     px.stop()
-    
-    # set_dir_servo_angle(0)
-    # time.sleep(1)
-    # self.set_motor_speed(1, 1)
-    # self.set_motor_speed(2, 1)
-    # camera_servo_pin.angle(0)
-# set_camera_servo1_angle(cam_cal_value_1)
-# set_camera_servo2_angle(cam_cal_value_2)
-# set_dir_servo_angle(dir_cal_value)
-
-# if __name__ == "__main__":
-#     try:
-#         # dir_servo_angle_calibration(-10) 
-#         while 1:
-#             test()
-#     finally: 
-#         stop()
