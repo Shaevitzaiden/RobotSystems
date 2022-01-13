@@ -1,11 +1,35 @@
-# from ezblock import Servo,PWM,fileDB,Pin,ADC
-from servo import Servo 
-from pwm import PWM
-from pin import Pin
-from adc import ADC
-from filedb import fileDB
-import time
+# Filename: picarx_improved.py
+# Description: improved version of sunfounder picarx file that allows for testing of code before pushing to a PiCar
+# Name: Aiden Shaevitz
+# Date: January 12, 2022
 
+import time
+import logging
+import atexit
+from logdecorator import log_on_start, log_on_end, log_on_error
+
+try :
+    from servo import Servo 
+    from pwm import PWM
+    from pin import Pin
+    from adc import ADC
+    from filedb import fileDB
+    # from utils import reset_mcu
+    # reset_mcu()
+    time.sleep(0.01)
+except:
+    print ("This computer does not appear to be a PiCar-X system (ezblock is not present ). Shadowing hardware calls with substitute functions ")
+    from sim_ezblock import *
+
+
+logging_format = "%(asctime)s: %(message)s"
+logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
+logging.getLogger().setLevel(logging.DEBUG)
+
+# LOGGING DECORATOR TYPES
+# @log_on_start(logging.DEBUG, "Message when function starts")
+# @log_on_error(logging.DEBUG, " Message when function encounters an error before completing")
+# @log_on_end(logging.DEBUG, " Message when function ends successfully")
 
 
 class Picarx(object):
@@ -14,6 +38,7 @@ class Picarx(object):
     TIMEOUT = 0.02
 
     def __init__(self):
+        atexit.register(self.stop)
         self.dir_servo_pin = Servo(PWM('P2'))
         self.camera_servo_pin1 = Servo(PWM('P0'))
         self.camera_servo_pin2 = Servo(PWM('P1'))
@@ -30,7 +55,6 @@ class Picarx(object):
         self.left_rear_dir_pin = Pin("D4")
         self.right_rear_dir_pin = Pin("D5")
 
-
         self.S0 = ADC('A0')
         self.S1 = ADC('A1')
         self.S2 = ADC('A2')
@@ -45,9 +69,8 @@ class Picarx(object):
         for pin in self.motor_speed_pins:
             pin.period(self.PERIOD)
             pin.prescaler(self.PRESCALER)
-
-
-
+        
+        
     def set_motor_speed(self,motor,speed):
         # global cali_speed_value,cali_dir_value
         motor -= 1
@@ -56,8 +79,9 @@ class Picarx(object):
         elif speed < 0:
             direction = -1 * self.cali_dir_value[motor]
         speed = abs(speed)
-        if speed != 0:
-            speed = int(speed /2 ) + 50
+        # SCALING == BAD
+        # if speed != 0:
+        #     speed = int(speed /2 ) + 50
         speed = speed - self.cali_speed_value[motor]
         if direction < 0:
             self.motor_direction_pins[motor].high()
@@ -139,6 +163,13 @@ class Picarx(object):
         self.set_motor_speed(1, speed)
         self.set_motor_speed(2, speed) 
 
+    def powerscale(self):
+        current_angle = math.radians(self.dir_current_angle)
+        lw = 95  # mm
+        dw = 112 # mm
+        ratio = (lw - dw/2 * math.tan(current_angle)) / (lw + dw/2 * math.tan(current_angle))
+        return ratio
+
     def backward(self,speed):
         current_angle = self.dir_current_angle
         if current_angle != 0:
@@ -162,11 +193,13 @@ class Picarx(object):
         current_angle = self.dir_current_angle
         if current_angle != 0:
             abs_current_angle = abs(current_angle)
-            # if abs_current_angle >= 0:
+            # Maximum servo angle is 40 deg
             if abs_current_angle > 40:
                 abs_current_angle = 40
-            power_scale = (100 - abs_current_angle) / 100.0 
-            print("power_scale:",power_scale)
+                
+            power_scale = self.powerscale()
+            print("power_scale:", power_scale)
+
             if (current_angle / abs_current_angle) > 0:
                 self.set_motor_speed(1, speed)
                 self.set_motor_speed(2, -1*speed * power_scale)
@@ -176,7 +209,8 @@ class Picarx(object):
         else:
             self.set_motor_speed(1, speed)
             self.set_motor_speed(2, -1*speed)                  
-
+    
+    # @log_on_end(logging.DEBUG, "Motors stopped successfully")
     def stop(self):
         self.set_motor_speed(1, 0)
         self.set_motor_speed(2, 0)
@@ -211,9 +245,11 @@ class Picarx(object):
 
 if __name__ == "__main__":
     px = Picarx()
+    px.set_dir_servo_angle(3)
     px.forward(50)
     time.sleep(1)
     px.stop()
+    
     # set_dir_servo_angle(0)
     # time.sleep(1)
     # self.set_motor_speed(1, 1)
