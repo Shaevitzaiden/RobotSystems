@@ -164,7 +164,7 @@ class Picarx(object):
 
     def powerscale(self):
         # function for getting the fancy ratio for powerscaling for the ackermann stearing model
-        current_angle = math.radians(self.dir_current_angle)
+        current_angle = abs(math.radians(self.dir_current_angle))
         lw = 95  # mm
         dw = 112 # mm
         ratio = (lw - dw/2 * math.tan(current_angle)) / (lw + dw/2 * math.tan(current_angle))
@@ -172,6 +172,7 @@ class Picarx(object):
 
     def backward(self,speed):
         current_angle = self.dir_current_angle
+        # print(current_angle)
         if current_angle != 0:
             abs_current_angle = abs(current_angle)
             # Maximum servo angle is +/-40 deg
@@ -201,7 +202,7 @@ class Picarx(object):
                 abs_current_angle = 40
 
             power_scale = self.powerscale()
-            # print("power_scale:", power_scale)
+            #print("power_scale:", power_scale)
 
             # Turned right
             if (current_angle / abs_current_angle) > 0:
@@ -250,11 +251,10 @@ class Picarx(object):
 
 if __name__ == "__main__":
     px = Picarx()
-    px.set_dir_servo_angle(0)
-    px.dir_servo_angle_calibration(11)
+    px.set_dir_servo_angle(-20)
     time.sleep(1)
     px.forward(50)
-    time.sleep(2)
+    time.sleep(0.5)
     px.stop()
     
     # set_dir_servo_angle(0)
