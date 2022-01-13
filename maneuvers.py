@@ -49,49 +49,61 @@ def parallel_park(px, initial_direction):
 
 def k_turn(px, initial_direction):
     if initial_direction == 'left':
-        px.set_dir_servo_angle(-40)
+        px.set_dir_servo_angle(-30)
         time.sleep(0.5)
-        px.forward(40)
-        time.sleep(2)
+        px.forward(50)
+        time.sleep(1.5)
+        px.stop()
 
         px.set_dir_servo_angle(20)
         time.sleep(0.5)
-        px.backward(40)
+        px.backward(50)
         time.sleep(1)
-
+        px.stop()
+        
         px.set_dir_servo_angle(-30)
         time.sleep(0.5)
         px.forward(40)
-        time.sleep(3)
+        time.sleep(2)
+        px.stop()
+
+        px.set_dir_servo_angle(0)
+        time.sleep(0.5)
 
     elif initial_direction == 'right':
-        px.set_dir_servo_angle(40)
+        px.set_dir_servo_angle(30)
         time.sleep(0.5)
-        px.forward(40)
-        time.sleep(2)
+        px.forward(50)
+        time.sleep(1.5)
+        px.stop()
 
         px.set_dir_servo_angle(-20)
         time.sleep(0.5)
-        px.backward(40)
+        px.backward(50)
         time.sleep(1)
-
+        px.stop()
+            
         px.set_dir_servo_angle(30)
         time.sleep(0.5)
         px.forward(40)
-        time.sleep(3)
+        time.sleep(2)
+        px.stop()
+        
+        px.set_dir_servo_angle(0)
+        time.sleep(0.5)
     px.stop()
 
 
 if __name__ == "__main__":
     px = Picarx()
     movement_type = 'enterloop'
-    movements = ['vanilla', 'parallel-park', 'k-turn', 'terminate', 'v', 'pp', 'k', 't']
+    movements = ['vanilla', 'parallel-park', 'k-turn', 'terminate', 'v', 'pp', 'k']
     while movement_type != 'terminate':
         movement_type = input('Enter movement type (vanilla, parallel-park, k-turn, terminate): ').lower()
         print(movement_type)
         while not True in [m == movement_type for m in movements]:
             movement_type = input('Try again!!! Enter movement type (vanilla, parallel-park, k-turn, terminate): ').lower()
-        if (movement_type == 'terminate') or (movement_type == 't'):
+        if movement_type == 'terminate':
             continue
         elif (movement_type == 'vanilla') or (movement_type == 'v'):
             direction = int(input('Enter turn angle ([-40:40] degrees): '))
