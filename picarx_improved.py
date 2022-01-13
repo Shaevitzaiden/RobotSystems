@@ -14,8 +14,8 @@ try :
     from pin import Pin
     from adc import ADC
     from filedb import fileDB
-    # from utils import reset_mcu
-    # reset_mcu()
+    from utils import reset_mcu
+    reset_mcu()
     time.sleep(0.01)
 except:
     print ("This computer does not appear to be a PiCar-X system (ezblock is not present ). Shadowing hardware calls with substitute functions ")
@@ -42,7 +42,7 @@ class Picarx(object):
         self.dir_servo_pin = Servo(PWM('P2'))
         self.camera_servo_pin1 = Servo(PWM('P0'))
         self.camera_servo_pin2 = Servo(PWM('P1'))
-        self.config_flie = fileDB('/home/pi/.config')
+        self.config_flie = fileDB('/home/aiden/.config')
         self.dir_cal_value = int(self.config_flie.get("picarx_dir_servo", default_value=0))
         self.cam_cal_value_1 = int(self.config_flie.get("picarx_cam1_servo", default_value=0))
         self.cam_cal_value_2 = int(self.config_flie.get("picarx_cam2_servo", default_value=0))
@@ -109,7 +109,6 @@ class Picarx(object):
             self.cali_dir_value[motor] = -1 * self.cali_dir_value[motor]
         self.config_flie.set("picarx_dir_motor", self.cali_dir_value)
 
-
     def dir_servo_angle_calibration(self,value):
         # global dir_cal_value
         self.dir_cal_value = value
@@ -164,6 +163,7 @@ class Picarx(object):
         self.set_motor_speed(2, speed) 
 
     def powerscale(self):
+        # function for getting the fancy ratio for powerscaling for the ackermann stearing model
         current_angle = math.radians(self.dir_current_angle)
         lw = 95  # mm
         dw = 112 # mm
@@ -174,14 +174,17 @@ class Picarx(object):
         current_angle = self.dir_current_angle
         if current_angle != 0:
             abs_current_angle = abs(current_angle)
-            # if abs_current_angle >= 0:
+            # Maximum servo angle is +/-40 deg
             if abs_current_angle > 40:
                 abs_current_angle = 40
-            power_scale = (100 - abs_current_angle) / 100.0 
-            print("power_scale:",power_scale)
+            power_scale = self.powerscale()
+            # print("power_scale:",power_scale)
+            
+            # Turned right
             if (current_angle / abs_current_angle) > 0:
                 self.set_motor_speed(1, -1*speed)
                 self.set_motor_speed(2, speed * power_scale)
+            # Turned left
             else:
                 self.set_motor_speed(1, -1*speed * power_scale)
                 self.set_motor_speed(2, speed )
@@ -193,16 +196,18 @@ class Picarx(object):
         current_angle = self.dir_current_angle
         if current_angle != 0:
             abs_current_angle = abs(current_angle)
-            # Maximum servo angle is 40 deg
+            # Maximum servo angle is +/-40 deg
             if abs_current_angle > 40:
                 abs_current_angle = 40
                 
             power_scale = self.powerscale()
-            print("power_scale:", power_scale)
+            # print("power_scale:", power_scale)
 
+            # Turned right
             if (current_angle / abs_current_angle) > 0:
                 self.set_motor_speed(1, speed)
                 self.set_motor_speed(2, -1*speed * power_scale)
+            # Turned left
             else:
                 self.set_motor_speed(1, speed * power_scale)
                 self.set_motor_speed(2, -1*speed )
@@ -245,8 +250,8 @@ class Picarx(object):
 
 if __name__ == "__main__":
     px = Picarx()
-    px.set_dir_servo_angle(3)
-    px.forward(50)
+    px.set_dir_servo_angle(20)
+    px.backward(50)
     time.sleep(1)
     px.stop()
     
