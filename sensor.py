@@ -1,11 +1,10 @@
 from adc import ADC
 
 class Sensor(object):
-    def __init__(self,ref = 1000):
+    def __init__(self):
         self.chn_0 = ADC("A0")
         self.chn_1 = ADC("A1")
         self.chn_2 = ADC("A2")
-        self.ref = ref
 
     def get_grayscale_data(self):
         adc_value_list = []
