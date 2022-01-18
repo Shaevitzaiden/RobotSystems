@@ -3,7 +3,7 @@ import numpy as np
 
 
 class Interpreter():
-    def __init__(self, sensitivity=10, polarity=1):
+    def __init__(self, sensitivity=0, polarity=1):
         self.sensitivity = sensitivity
         self.polarity = polarity
 
@@ -19,4 +19,7 @@ class Interpreter():
                 error = (min(adc_vals_norm)-np.mean(adc_vals_norm))/0.7
             print("Error: "+str(error))
             rel_dir_pol = rel_dir*error*self.polarity
+        else:
+            rel_dir_pol = 0
+            print('straight')
         return rel_dir_pol

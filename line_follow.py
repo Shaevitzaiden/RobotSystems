@@ -2,6 +2,7 @@ from sensor import Sensor
 from interpreter import Interpreter
 from controller import Controller
 from picarx_improved import Picarx
+from time import sleep
 
 def follow_line(sensor, interpretor, controller):
     go = 1
@@ -13,7 +14,7 @@ def follow_line(sensor, interpretor, controller):
 if __name__ == "__main__":
     px = Picarx()
     s = Sensor()
-    i = Interpreter()
-    c = Controller(px)
+    i = Interpreter(polarity=-1)
+    c = Controller(px, scaling_factor=14)
 
     follow_line(s, i, c)

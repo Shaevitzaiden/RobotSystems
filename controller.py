@@ -8,8 +8,9 @@ class Controller():
 
     def follow_line(self, mag):
         angle = -self.scaling_factor * 40 * mag
+        speed = abs(mag) * 20 + 30
         self.px.set_dir_servo_angle(angle)
-        self.px.forward(40)
+        self.px.forward(speed)
         return angle
 
 
