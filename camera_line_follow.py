@@ -15,7 +15,7 @@ _SHOW_IMAGE = False
 
 class HandCodedLaneFollower(object):
 
-    def __init__(self, px):
+    def __init__(self, px=None):
         logging.info('Creating a HandCodedLaneFollower...')
         self.px = px
         self.curr_steering_angle = 0
@@ -40,8 +40,8 @@ class HandCodedLaneFollower(object):
 
         new_steering_angle = compute_steering_angle(frame, lane_lines)
         self.curr_steering_angle = stabilize_steering_angle(self.curr_steering_angle, new_steering_angle, len(lane_lines))
-
-        if self.car is not None:
+        print(self.curr_steering_angle)
+        if self.px is not None:
             self.px.set_dir_servo_angle(self.curr_steering_angle)
         curr_heading_image = display_heading_line(frame, self.curr_steering_angle)
         show_image("heading", curr_heading_image)
@@ -327,13 +327,6 @@ def test_video(video_file):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-
-    test_video('/home/pi/DeepPiCar/driver/data/tmp/video01')
-    #test_photo('/home/pi/DeepPiCar/driver/data/video/car_video_190427_110320_073.png')
-    #test_photo(sys.argv[1])
-    #test_video(sys.argv[1])
-
-if __name__ == "__main__":
     px = Picarx()
     line_follower = HandCodedLaneFollower(px)
     
@@ -346,9 +339,9 @@ if __name__ == "__main__":
     for frame in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True): # use_video_port=True
         img = frame.array
         cv2.imshow("video", img)  # OpenCV image show
-        rawCapture.truncate(0)  # Release cache
+        
         line_follower.follow_lane(img)
-    
+        rawCapture.truncate(0)  # Release cache
     
         # click ESC key to exit.
         k = cv2.waitKey(1) & 0xFF
