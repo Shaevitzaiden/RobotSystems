@@ -14,7 +14,7 @@ def vanilla_movement(px, direction, speed, duration):
     
 def parallel_park(px, initial_direction):
     if initial_direction == 'left':
-        px.
+        px.set_dir_servo_angle(-39)
         time.sleep(0.5)
         px.backward(60)
         time.sleep(0.75)
