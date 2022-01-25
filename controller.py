@@ -13,7 +13,11 @@ class Controller():
         self.px.forward(speed)
         return angle
 
+    def bus_consume(self, bus_in, delay):
+        self.follow_line(bus_in.read())
+        sleep(delay)
 
-if __name__ == "__main__":
-    px = Picarx()
-    c = Controller(px)
+
+# if __name__ == "__main__":
+#     px = Picarx()
+#     c = Controller(px)

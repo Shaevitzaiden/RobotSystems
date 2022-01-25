@@ -1,5 +1,6 @@
 from re import L
 import numpy as np
+import time
 
 
 class Interpreter():
@@ -23,3 +24,7 @@ class Interpreter():
             rel_dir_pol = 0
             print('straight')
         return rel_dir_pol
+
+    def bus_consume_produce(self, bus_in, bus_out, delay):
+        bus_out.write(self.get_edge_relation(bus_in.read()))
+        time.sleep(delay)
