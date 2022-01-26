@@ -23,11 +23,11 @@ class Controller():
         self.px.forward(speed)
         return angle
 
-    def bus_consume(self, bus_in, delay):
-        while True:
-            magnitude = bus_in.read()
-            self.follow_line(magnitude)
-            sleep(delay)
+    # def bus_consume(self, bus_in, delay):
+    #     while True:
+    #         magnitude = bus_in.read()
+    #         self.follow_line(magnitude)
+    #         sleep(delay)
 
 
 # if __name__ == "__main__":

@@ -22,11 +22,11 @@ class Sensor(object):
         adc_value_list.append(self.chn_2.read())
         return adc_value_list
 
-    def bus_produce(self, bus, delay):
-        while True:
-            sensor_val = self.get_grayscale_data()
-            bus.write(sensor_val)
-            sleep(delay)
+    # def bus_produce(self, bus, delay):
+    #     while True:
+    #         sensor_val = self.get_grayscale_data()
+    #         bus.write(sensor_val)
+    #         sleep(delay)
 
 # if __name__ == "__main__":
 #     import time

@@ -16,7 +16,7 @@ class Interpreter():
         self.polarity = polarity
 
     @log_on_start(logging.DEBUG, "Intepreter method started")
-    @log_on_start(logging.DEBUG, "Intepreter method finished")
+    @log_on_end(logging.DEBUG, "Intepreter method finished")
     def get_edge_relation(self, adc_vals):
         adc_vals_norm = [float(i)/max(adc_vals) for i in adc_vals]
         adc_vals_diff = max(adc_vals_norm)-min(adc_vals_norm)
@@ -34,9 +34,9 @@ class Interpreter():
             print('straight')
         return rel_dir_pol
 
-    def bus_consume_produce(self, bus_in, bus_out, delay):
-        while True:
-            bus_in_data = bus_in.read()
-            edge_relation = self.get_edge_relation(bus_in_data)
-            bus_out.write(edge_relation)
-            time.sleep(delay)
+    # def bus_consume_produce(self, bus_in, bus_out, delay):
+    #     while True:
+    #         bus_in_data = bus_in.read()
+    #         edge_relation = self.get_edge_relation(bus_in_data)
+    #         bus_out.write(edge_relation)
+    #         time.sleep(delay)
