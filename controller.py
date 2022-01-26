@@ -25,7 +25,8 @@ class Controller():
 
     def bus_consume(self, bus_in, delay):
         while True:
-            self.follow_line(bus_in.read())
+            magnitude = bus_in.read()
+            self.follow_line(magnitude)
             sleep(delay)
 
 
