@@ -13,8 +13,8 @@ class Sensor(object):
         self.chn_1 = ADC("A1")
         self.chn_2 = ADC("A2")
 
-    @log_on_start(logging.DEBUG, "Sensor method started")
-    @log_on_start(logging.DEBUG, "Sensor method finished")
+    # @log_on_start(logging.DEBUG, "Sensor method started")
+    # @log_on_start(logging.DEBUG, "Sensor method finished")
     def get_grayscale_data(self):
         adc_value_list = []
         adc_value_list.append(self.chn_0.read())
@@ -24,7 +24,8 @@ class Sensor(object):
 
     def bus_produce(self, bus, delay):
         while True:
-            bus.write(self.get_grayscale_data())
+            sensor_val = self.get_grayscale_data()
+            bus.write(sensor_val)
             sleep(delay)
 
 # if __name__ == "__main__":
