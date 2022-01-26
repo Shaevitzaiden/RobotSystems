@@ -15,7 +15,7 @@ class Controller():
         self.scaling_factor = scaling_factor
 
     @log_on_start(logging.DEBUG, "Controller method started")
-    @log_on_start(logging.DEBUG, "Controller method finished")
+    @log_on_end(logging.DEBUG, "Controller method finished")
     def follow_line(self, mag):
         angle = -self.scaling_factor * 40 * mag
         speed = abs(mag) * 20 + 30
