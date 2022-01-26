@@ -6,10 +6,10 @@ class Bus():
         self.message = None
     
     def write(self, message):
-        with self.lock.gen_wlock ():
+        with self.lock.gen_wlock():
             self.message = message
 
     def read(self):
-        with self.lock.gen_rlock:
+        with self.lock.gen_rlock():
             message = self.message
         return message
