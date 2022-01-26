@@ -26,6 +26,6 @@ class Interpreter():
         return rel_dir_pol
 
     def bus_consume_produce(self, bus_in, bus_out, delay):
-        print("pp")
-        bus_out.write(self.get_edge_relation(bus_in.read()))
-        time.sleep(delay)
+        while True:
+            bus_out.write(self.get_edge_relation(bus_in.read()))
+            time.sleep(delay)

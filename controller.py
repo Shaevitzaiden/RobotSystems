@@ -14,9 +14,9 @@ class Controller():
         return angle
 
     def bus_consume(self, bus_in, delay):
-        print("tt")
-        self.follow_line(bus_in.read())
-        sleep(delay)
+        while True:
+            self.follow_line(bus_in.read())
+            sleep(delay)
 
 
 # if __name__ == "__main__":
