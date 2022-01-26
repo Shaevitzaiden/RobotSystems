@@ -2,12 +2,21 @@ from re import L
 import numpy as np
 import time
 
+import logging
+from logdecorator import log_on_end, log_on_error, log_on_start
+
+logging_format = "%(asctime)s: %(message)s"
+logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
+logging.getLogger().setLevel(logging.DEBUG)
+
 
 class Interpreter():
     def __init__(self, sensitivity=0, polarity=1):
         self.sensitivity = sensitivity
         self.polarity = polarity
 
+    @log_on_start(logging.DEBUG, "Intepreter method started")
+    @log_on_start(logging.DEBUG, "Intepreter method finished")
     def get_edge_relation(self, adc_vals):
         adc_vals_norm = [float(i)/max(adc_vals) for i in adc_vals]
         adc_vals_diff = max(adc_vals_norm)-min(adc_vals_norm)

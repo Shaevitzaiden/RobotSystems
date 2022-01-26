@@ -1,5 +1,11 @@
 from adc import ADC
 from time import sleep
+import logging
+from logdecorator import log_on_end, log_on_error, log_on_start
+
+logging_format = "%(asctime)s: %(message)s"
+logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
+logging.getLogger().setLevel(logging.DEBUG)
 
 class Sensor(object):
     def __init__(self):
@@ -7,6 +13,8 @@ class Sensor(object):
         self.chn_1 = ADC("A1")
         self.chn_2 = ADC("A2")
 
+    @log_on_start(logging.DEBUG, "Sensor method started")
+    @log_on_start(logging.DEBUG, "Sensor method finished")
     def get_grayscale_data(self):
         adc_value_list = []
         adc_value_list.append(self.chn_0.read())
