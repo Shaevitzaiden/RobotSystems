@@ -19,7 +19,7 @@ if __name__ == "__main__":
     c = Controller(px, scaling_factor=14)
 
     s_producer = Producer()
-    i_consumer_producer = ConsumerProducer()
+    i_cp = ConsumerProducer()
     c_consumer = Consumer()
     
     sensor_delay = 0.025
@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         eSensor = executor.submit(s_producer.produce, s.get_grayscale_data, sensor_bus, sensor_delay)
-        eInterpreter = executor.submit(i_consumer_producer.consume_produce, i.get_edge_relation, sensor_bus, interp_bus, interp_delay)
+        eInterpreter = executor.submit(i_cp.consume_produce, i.get_edge_relation, sensor_bus, interp_bus, interp_delay)
         eController = executor.submit(c_consumer.consume, c.follow_line, interp_bus, control_delay)
 
     eSensor.result()
