@@ -27,5 +27,7 @@ class Interpreter():
 
     def bus_consume_produce(self, bus_in, bus_out, delay):
         while True:
-            bus_out.write(self.get_edge_relation(bus_in.read()))
+            bus_in_data = bus_in.read()
+            edge_relation = self.get_edge_relation(bus_in_data)
+            bus_out.write(edge_relation)
             time.sleep(delay)
