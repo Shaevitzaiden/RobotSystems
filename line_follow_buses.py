@@ -24,9 +24,9 @@ if __name__ == "__main__":
     i = Interpreter(polarity=-1)
     c = Controller(px, scaling_factor=14)
     
-    sensor_delay = 1
-    interp_delay = 1
-    control_delay = 1
+    sensor_delay = 0.025
+    interp_delay = 0.01
+    control_delay = 0.005
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         eSensor = executor.submit(s.bus_produce, sensor_bus, sensor_delay)

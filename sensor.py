@@ -16,7 +16,7 @@ class Sensor(object):
 
     def bus_produce(self, bus, delay):
         while True:
-            bus.write(self.get_graysscale_data())
+            bus.write(self.get_grayscale_data())
             sleep(delay)
 
 # if __name__ == "__main__":

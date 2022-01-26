@@ -10,8 +10,7 @@ from picarx_improved import Picarx
 
 
 
-_SHOW_IMAGE = False
-
+_SHOW_IMAGE = True
 
 class HandCodedLaneFollower(object):
 
@@ -174,7 +173,7 @@ def compute_steering_angle(frame, lane_lines):
     """
     if len(lane_lines) == 0:
         logging.info('No lane lines detected, do nothing')
-        return -90
+        return 0
 
     height, width, _ = frame.shape
     if len(lane_lines) == 1:
@@ -193,7 +192,7 @@ def compute_steering_angle(frame, lane_lines):
 
     angle_to_mid_radian = math.atan(x_offset / y_offset)  # angle (in radian) to center vertical line
     angle_to_mid_deg = int(angle_to_mid_radian * 180.0 / math.pi)  # angle (in degrees) to center vertical line
-    steering_angle = angle_to_mid_deg + 90  # this is the steering angle needed by picar front wheel
+    steering_angle = angle_to_mid_deg   # this is the steering angle needed by picar front wheel
 
     logging.debug('new steering angle: %s' % steering_angle)
     return steering_angle
@@ -250,6 +249,8 @@ def display_heading_line(frame, steering_angle, line_color=(0, 0, 255), line_wid
     steering_angle_radian = steering_angle / 180.0 * math.pi
     x1 = int(width / 2)
     y1 = height
+    if steering_angle_radian == 0:
+        steering_angle_radian = 0.001
     x2 = int(x1 - height / 2 / math.tan(steering_angle_radian))
     y2 = int(height / 2)
 
@@ -335,7 +336,7 @@ if __name__ == '__main__':
     camera.resolution = (640,480)
     camera.framerate = 24
     rawCapture = PiRGBArray(camera, size=camera.resolution)  
-
+    px.forward(20)
     for frame in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True): # use_video_port=True
         img = frame.array
         cv2.imshow("video", img)  # OpenCV image show
