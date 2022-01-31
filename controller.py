@@ -14,6 +14,9 @@ class Controller():
         self.px = picarx
         self.scaling_factor = scaling_factor
 
+    def __call__(self, mag):
+        return self.follow_line(mag)
+
     @log_on_start(logging.DEBUG, "Controller method started")
     @log_on_end(logging.DEBUG, "Controller method finished")
     def follow_line(self, mag):
