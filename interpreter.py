@@ -15,6 +15,7 @@ class Interpreter():
         self.sensitivity = sensitivity
         self.polarity = polarity
 
+
     def __call__(self, adc_vals):
         return self.get_edge_relation(adc_vals)
 

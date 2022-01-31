@@ -12,9 +12,9 @@ class Sensor(object):
         self.chn_0 = ADC("A0")
         self.chn_1 = ADC("A1")
         self.chn_2 = ADC("A2")
-
+        
     def __call__(self):
-        return self.get_grayscale_data
+        return self.get_grayscale_data()
         
     @log_on_start(logging.DEBUG, "Sensor method started")
     @log_on_error(logging.DEBUG, "Sensor method error")
