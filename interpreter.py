@@ -15,8 +15,8 @@ class Interpreter():
         self.sensitivity = sensitivity
         self.polarity = polarity
 
-    @log_on_start(logging.DEBUG, "Intepreter method started")
-    @log_on_end(logging.DEBUG, "Intepreter method finished")
+    # @log_on_start(logging.DEBUG, "Intepreter method started")
+    # @log_on_end(logging.DEBUG, "Intepreter method finished")
     def get_edge_relation(self, adc_vals):
         adc_vals_norm = [float(i)/max(adc_vals) for i in adc_vals]
         adc_vals_diff = max(adc_vals_norm)-min(adc_vals_norm)
