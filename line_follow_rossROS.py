@@ -1,5 +1,4 @@
 import concurrent.futures
-from msilib.schema import Directory
 import sys, os
 from sensor import Sensor
 from interpreter import Interpreter
@@ -8,13 +7,13 @@ from picarx_improved import Picarx
 from time import sleep
 from readerwriterlock import rwlock
 
-# directory = os.getcdw()
-# sys.path.insert(0,"{0}/rossRoss".format(directory))
-from rossROS import Bus, ConsumerProducer, Consumer, Producer, Timer
+# directory = os.getcwd()
+sys.path.append(r"/home/aiden/RobotSystems/rossROS")
+from rossros import Bus, ConsumerProducer, Consumer, Producer, Timer
 
 
 if __name__ == "__main__":
-    sensor_bus = Bus(name="sensor bus")
+    sensor_bus = Bus(initial_message=[1,1,1],name="sensor bus")
     interp_bus = Bus(name="interpretor bus")
     termination_bus = Bus(name="termination bus")
     
