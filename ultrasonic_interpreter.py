@@ -10,12 +10,12 @@ logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S
 logging.getLogger().setLevel(logging.DEBUG)
 
 
-class Interpreter():
+class UltrasonicInterpreter():
     def __init__(self, slow_factor=2):
         self.slow_factor = slow_factor
 
     def __call__(self, sens_dist):
-        return self.get_stop_or_not(sens_dist)
+        return self.stop_or_not(sens_dist)
 
     @log_on_start(logging.DEBUG, "Ultrasonic Intepreter method started")
     @log_on_error(logging.DEBUG, "Ultrasonic method error")

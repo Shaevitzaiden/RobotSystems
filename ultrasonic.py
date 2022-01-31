@@ -7,6 +7,9 @@ class Ultrasonic():
         self.echo = echo
         self.timeout = timeout
 
+    def __call__(self):
+        return self._read()
+
     def _read(self):
         self.trig.low()
         time.sleep(0.01)
