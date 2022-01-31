@@ -19,6 +19,7 @@ class Interpreter():
         return self.get_edge_relation(adc_vals)
 
     @log_on_start(logging.DEBUG, "Intepreter method started")
+    @log_on_error(logging.DEBUG, "Interpreter method error")
     @log_on_end(logging.DEBUG, "Intepreter method finished")
     def get_edge_relation(self, adc_vals):
         adc_vals_norm = [float(i)/max(adc_vals) for i in adc_vals]
