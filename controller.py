@@ -13,6 +13,7 @@ class Controller():
     def __init__(self, picarx, scaling_factor=1):
         self.px = picarx
         self.scaling_factor = scaling_factor
+        self.ultra_scale = 1
 
     def __call__(self, mag):
         return self.follow_line(mag)
@@ -24,16 +25,8 @@ class Controller():
         angle = -self.scaling_factor * 40 * mag
         speed = abs(mag) * 20 + 30
         self.px.set_dir_servo_angle(angle)
-        self.px.forward(speed)
+        self.px.forward(speed*self.ultra_scale)
         return angle
 
-    # def bus_consume(self, bus_in, delay):
-    #     while True:
-    #         magnitude = bus_in.read()
-    #         self.follow_line(magnitude)
-    #         sleep(delay)
-
-
-# if __name__ == "__main__":
-#     px = Picarx()
-#     c = Controller(px)
+    def ultrasonic_control(self, scale):
+        self.ultra_scale = scale
