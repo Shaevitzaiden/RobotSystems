@@ -21,5 +21,7 @@ class UltrasonicInterpreter():
     @log_on_error(logging.DEBUG, "Ultrasonic method error")
     @log_on_end(logging.DEBUG, "Ultrasonic method finished")
     def stop_or_not(self, sens_dist):
-        return np.tanh(sens_dist/self.slow_factor)
+        scaler = np.tanh(sens_dist/self.slow_factor)
+        print("scaler = {0} --------------------------------------------------------------------".format(scaler))
+        return scaler 
 

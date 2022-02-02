@@ -17,7 +17,7 @@ from rossros import Bus, ConsumerProducer, Consumer, Producer, Timer
 
 if __name__ == "__main__":
     sensor_bus = Bus(initial_message=[1,1,1],name="sensor bus")
-    ultra_bus = Bus(name="ultra sensor bus")
+    ultra_bus = Bus(initial_message=20,name="ultra sensor bus")
     interp_bus = Bus(name="interpretor bus")
     ui_bus = Bus(name="ultra interp bus")
     termination_bus = Bus(name="termination bus")
@@ -26,15 +26,15 @@ if __name__ == "__main__":
     s = Sensor()
     i = Interpreter(polarity=-1)
     u = Ultrasonic()
-    ui = UltrasonicInterpreter()
+    ui = UltrasonicInterpreter(20)
     c = Controller(px, scaling_factor=14)
     
-    timer = Timer(termination_bus, 3, 0.01,termination_bus)
+    timer = Timer(termination_bus, 1, 0.01,termination_bus)
     s_producer = Producer(s, output_busses=sensor_bus, delay=0.05, termination_busses=termination_bus, name="sensor producer")
     i_cp = ConsumerProducer(i, input_busses=sensor_bus, output_busses=interp_bus,delay=0.05, termination_busses=termination_bus, name="interpretor consumer-producer")
-    c_consumer = Consumer(c, input_busses=[interp_bus, ui_bus], delay=0.05, termination_busses=termination_bus, name="controller consumer")
+    c_consumer = Consumer(c, input_busses=(interp_bus, ui_bus), delay=0.05, termination_busses=termination_bus, name="controller consumer")
     u_producer = Producer(u, output_busses=ultra_bus, delay=0.05, termination_busses=termination_bus, name="ultra producer")
-    ui_cp = ConsumerProducer(ui, input_busses=ultra_bus, delay=0.5, termination_bus=termination_bus, name="ultra interpreter")
+    ui_cp = ConsumerProducer(ui, input_busses=ultra_bus, output_busses=ui_bus, delay=0.05, termination_busses=termination_bus, name="ultra interpreter")
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
         eSensor = executor.submit(s_producer)
