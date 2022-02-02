@@ -12,7 +12,7 @@ class Sensor(object):
         self.chn_0 = ADC("A0")
         self.chn_1 = ADC("A1")
         self.chn_2 = ADC("A2")
-        
+
     def __call__(self):
         return self.get_grayscale_data()
         

@@ -15,18 +15,27 @@ class Controller():
         self.scaling_factor = scaling_factor
         self.ultra_scale = 1
 
-    def __call__(self, mag):
-        return self.follow_line(mag)
+    def __call__(self, mag, ultra_scale):
+        return self.follow_line(mag, ultra_scale)
 
     @log_on_start(logging.DEBUG, "Controller method started")
     @log_on_error(logging.DEBUG, "Controller method error")
     @log_on_end(logging.DEBUG, "Controller method finished")
-    def follow_line(self, mag):
+    def follow_line(self, mag, ultra_scale):
+        # update speed scaling
+        self.ultra_scale = ultra_scale
+        
+        # Calculate angle
         angle = -self.scaling_factor * 40 * mag
+        
+        # Scale speed based on angle magnitude
         speed = abs(mag) * 20 + 30
+        
+        # Set steering angle and speed scaled by ultra-sonic scaler (0->1)
         self.px.set_dir_servo_angle(angle)
         self.px.forward(speed*self.ultra_scale)
+        
         return angle
 
-    def ultrasonic_control(self, scale):
-        self.ultra_scale = scale
+    # def ultrasonic_control(self, scale):
+    #     self.ultra_scale = scale
