@@ -131,7 +131,6 @@ class Perception():
 if __name__ == "__main__":
     camera = Camera.Camera()
     p = Perception(camera)
-
     while True:
         frame = p.get_frame()
         if frame is not None:
