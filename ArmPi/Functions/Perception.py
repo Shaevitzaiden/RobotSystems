@@ -28,17 +28,11 @@ class Perception():
 
         # Garbo
         self.count = 0
-        self.track = False
-        self._stop = False
         self.get_roi = False
-        self.first_move = True
         self.center_list = []
-        self.isRunning = False
         self.detect_color = 'None'
-        self.action_finish = True
-        self.start_pick_up = False
         self.target_color = ()
-        self.start_count_t1 = True
+        
         
         # Camera from which to receive frames
         self.camera = camera
@@ -47,9 +41,11 @@ class Perception():
     def get_frame(self, show_frame=False):
         img = self.camera.frame
         frame = img.copy()
+        if show_frame:
+            cv2.imshow('Raw Frame', frame)
         return frame
     
-    def preprocess(self, frame):
+    def preprocess(self, frame, show_frame=False):
         frame_copy = frame.copy() # make a copy of the already copied frame?
         img_h, img_w = frame.shape[:2]  # get image dimensions
         cv2.line(frame, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
@@ -60,12 +56,17 @@ class Perception():
         frame_gb = cv2.GaussianBlur(frame_resize, (11, 11), 11) # apply gaussian smoothing to resized frame
            
         frame_lab = cv2.cvtColor(frame_gb, cv2.COLOR_BGR2LAB)  # Convert image to LAB space
+
+        if show_frame:
+            cv2.imshow("LAB-space Frame", frame_lab)
         return frame_lab
 
-    def find_cube(self, frame_lab):
+    def find_cubes(self, frame, frame_lab, add_contours=True, show_frame=False):
         """ Finds a cube in a frame if it exists
         :params frame: a frame in LAB space that has undergone preprocessing
-        :return: None if no cube found, returns center of cube if found
+        :params bool add_contours: add contour boxes and text to original image
+        :params bool show_frame: show the frame or not
+        :return: frame with or without contours, and coordinates in world space of block (returns none if there is no block)
         """
         for i in color_range:  # loop over the "color range" which isn't defined anywhere somehow
             if i in self.target_color:  # and if the color is the target color
@@ -75,30 +76,35 @@ class Perception():
                 closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))  # closed operation: attempts to remove false negatives imposed by the opening procedure
                 contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]  # find the outline
                 areaMaxContour, area_max = self.getAreaMaxContour(contours)  # find the largest contour (ideally the block) and return its area
+        
+        world_x = None  # if no 
+        world_y = None
         if area_max > 2500:  # have found the largest area
             rect = cv2.minAreaRect(areaMaxContour) # places a rectangle around the contour (again ideally the block)
             box = np.int0(cv2.boxPoints(rect))  # not sure tbh
 
-            roi = getROI(box) # get roi
-            get_roi = True 
+            roi = getROI(box) # get region of interest
+            # get_roi = True 
 
             img_centerx, img_centery = getCenter(rect, roi, self.size, square_length)  # Get the coordinates of the center of the block
             world_x, world_y = convertCoordinate(img_centerx, img_centery, self.size) # Convert to real world coordinates
+        
+            if add_contours:
+                cv2.drawContours(frame, [box], -1, self.range_rgb[detect_color], 2) # draw contour around the cube of the right color
+                cv2.putText(frame, '(' + str(world_x) + ',' + str(world_y) + ')', (min(box[0, 0], box[2, 0]), box[2, 1] - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.range_rgb[detect_color], 1) # draw center point
+        
+        return frame, (world_x, world_y)
+    
 
     def reset(self) -> None:
         """ Reset all defaults, no parameters, returns nothing"""
         self.count = 0
         self.track = False
-        self._stop = False
         self.get_roi = False
-        self.first_move = True
-        self.center_list = []
-        self.isRunning = False
         self.detect_color = 'None'
-        self.action_finish = True
-        self.start_pick_up = False
         self.target_color = ()
-        self.start_count_t1 = True
+    
  
     @staticmethod
     def getAreaMaxContour(contours):
