@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 # coding=utf8
-from msilib.schema import Class
 import sys
 sys.path.append('/home/aiden/RobotSystems/ArmPi/')
 import cv2
@@ -76,6 +75,7 @@ class Perception():
         :params bool show_frame: show the frame or not
         :return: frame with or without contours, and coordinates in world space of block (returns none if there is no block)
         """
+        area_max = 0
         for i in color_range:  # loop over the "color range" which isn't defined anywhere somehow
             if i in self.target_color:  # and if the color is the target color
                 detect_color = i  # = the target color
@@ -134,9 +134,13 @@ if __name__ == "__main__":
 
     while True:
         frame = p.get_frame()
-        frame_preprocessed = p.preprocess(frame)
-        frame_final, coords = p.find_cubes(frame_preprocessed, frame)
-        key = cv2.waitKey(1) 
-        if key == 27:
-            break
+        if frame is not None:
+            frame_preprocessed = p.preprocess(frame)
+            frame_final, coords = p.find_cubes(frame_preprocessed, frame)
+            cv2.imshow("Final Frame", frame_final)
+            key = cv2.waitKey(1) 
+            if key == 27:
+                break
+    camera.camera_close()
+    cv2.destroyAllWindows()
     
