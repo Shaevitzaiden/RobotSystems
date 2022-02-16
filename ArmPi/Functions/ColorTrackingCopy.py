@@ -97,7 +97,7 @@ detect_color = 'None'
 action_finish = True
 start_pick_up = False
 start_count_t1 = True
-# 变量重置
+# variable reset
 def reset():
     global count
     global track
@@ -129,7 +129,8 @@ def init():
     print("ColorTracking Init")
     initMove()
 
-# app-start play call
+# app-start play call?
+# runs the reset() function (which just sets everything back to default values) and sets __isRunning to True
 def start():
     global __isRunning
     reset()
@@ -309,16 +310,17 @@ def run(img):
     global start_count_t1, t1
     global start_pick_up, first_move
     
-    img_copy = img.copy()
-    img_h, img_w = img.shape[:2]
+    img_copy = img.copy() # make a copy of the already copied frame?
+    img_h, img_w = img.shape[:2]  # get image dimensions
     cv2.line(img, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
     cv2.line(img, (int(img_w / 2), 0), (int(img_w / 2), img_h), (0, 0, 200), 1)
     
-    if not __isRunning:
+    if not __isRunning: # If not running exit and return the original frame, currently only set 
         return img
      
-    frame_resize = cv2.resize(img_copy, size, interpolation=cv2.INTER_NEAREST)
-    frame_gb = cv2.GaussianBlur(frame_resize, (11, 11), 11)
+    frame_resize = cv2.resize(img_copy, size, interpolation=cv2.INTER_NEAREST) # resizes the frame to be smaller, size is set outside the function -------------> bad
+    frame_gb = cv2.GaussianBlur(frame_resize, (11, 11), 11) # apply gaussian smoothing to resized frame
+    
     # If an area is detected with a recognized object, the area is detected until there are none
     if get_roi and start_pick_up:
         get_roi = False
@@ -328,27 +330,27 @@ def run(img):
     
     area_max = 0
     areaMaxContour = 0
-    if not start_pick_up:
-        for i in color_range:
-            if i in __target_color:
-                detect_color = i
-                frame_mask = cv2.inRange(frame_lab, color_range[detect_color][0], color_range[detect_color][1])  # Bitwise operations on the original image and mask
+    if not start_pick_up:  # If a pickup has not already been initialized:
+        for i in color_range:  # loop over the "color range" which isn't defined anywhere somehow
+            if i in __target_color:  # and if the color is the target color
+                detect_color = i  # = the target color
+                frame_mask = cv2.inRange(frame_lab, color_range[detect_color][0], color_range[detect_color][1])  # Makes a black and white image where the color of interest (of a block) is between the range making it white and the background black
                 opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8))  # open operation
-                closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))  # closed operation
+                closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))  # closed operation: attempts to remove false negatives imposed by the opening procedure
                 contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]  # find the outline
-                areaMaxContour, area_max = getAreaMaxContour(contours)  # find the largest contour
+                areaMaxContour, area_max = getAreaMaxContour(contours)  # find the largest contour (ideally the block) and return its area
         if area_max > 2500:  # have found the largest area
-            rect = cv2.minAreaRect(areaMaxContour)
-            box = np.int0(cv2.boxPoints(rect))
+            rect = cv2.minAreaRect(areaMaxContour) # places a rectangle around the contour (again ideally the block)
+            box = np.int0(cv2.boxPoints(rect))  # not sure tbh
 
-            roi = getROI(box) # get roi region
-            get_roi = True
+            roi = getROI(box) # get roi
+            get_roi = True 
 
             img_centerx, img_centery = getCenter(rect, roi, size, square_length)  # Get the coordinates of the center of the block
             world_x, world_y = convertCoordinate(img_centerx, img_centery, size) # Convert to real world coordinates
             
             
-            cv2.drawContours(img, [box], -1, range_rgb[detect_color], 2)
+            cv2.drawContours(img, [box], -1, range_rgb[detect_color], 2) # draw contour around the cube of the right color
             cv2.putText(img, '(' + str(world_x) + ',' + str(world_y) + ')', (min(box[0, 0], box[2, 0]), box[2, 1] - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, range_rgb[detect_color], 1) # draw center point
             distance = math.sqrt(pow(world_x - last_x, 2) + pow(world_y - last_y, 2)) # Compare the last coordinates to determine whether to move
@@ -358,7 +360,7 @@ def run(img):
             # Cumulative judgment
             if action_finish:
                 if distance < 0.3:
-                    center_list.extend((world_x, world_y))
+                    center_list.extend((world_x, world_y)) # add the center coords to the end of the list
                     count += 1
                     if start_count_t1:
                         start_count_t1 = False
@@ -384,13 +386,13 @@ if __name__ == '__main__':
     my_camera = Camera.Camera()
     my_camera.camera_open()
     while True:
-        img = my_camera.frame
-        if img is not None:
-            frame = img.copy()
-            Frame = run(frame)           
-            cv2.imshow('Frame', Frame)
-            key = cv2.waitKey(1)
-            if key == 27:
+        img = my_camera.frame  # get frame from camera
+        if img is not None:  # If there is a frame:
+            frame = img.copy()  # copy the frame (idk why, maybe it's to prevent editing the original frame) 
+            Frame = run(frame)  # enter main loop with a frame as the only input
+            cv2.imshow('Frame', Frame) # show the frame on the screen
+            key = cv2.waitKey(1) 
+            if key == 27:  # If escape key pressed then exit
                 break
     my_camera.camera_close()
     cv2.destroyAllWindows()
