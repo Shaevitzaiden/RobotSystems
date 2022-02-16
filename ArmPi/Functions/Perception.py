@@ -6,7 +6,6 @@ sys.path.append('/home/aiden/RobotSystems/ArmPi/')
 import cv2
 import time
 import Camera
-import threading
 from LABConfig import *
 from ArmIK.Transform import *
 from ArmIK.ArmMoveIK import *
@@ -29,23 +28,31 @@ class Perception():
         # Garbo
         self.count = 0
         self.get_roi = False
-        self.center_list = []
         self.detect_color = 'None'
         self.target_color = ()
-        
         
         # Camera from which to receive frames
         self.camera = camera
         self.camera.camera_open() 
 
     def get_frame(self, show_frame=False):
+        """ retrieves a frame from the camera
+        :params bool show_frame: show the frame or not
+        """
         img = self.camera.frame
-        frame = img.copy()
-        if show_frame:
-            cv2.imshow('Raw Frame', frame)
-        return frame
+        if img is not None:
+            frame = img.copy()
+            if show_frame:
+                cv2.imshow('Raw Frame', frame)
+            return frame
+        return None
     
     def preprocess(self, frame, show_frame=False):
+        """ Performs some basic image preprocessing
+        :params frame: frame to be processed
+        :params bool show_frame: show the frame or not
+        :return: image in LAB-space
+        """
         frame_copy = frame.copy() # make a copy of the already copied frame?
         img_h, img_w = frame.shape[:2]  # get image dimensions
         cv2.line(frame, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
@@ -61,9 +68,10 @@ class Perception():
             cv2.imshow("LAB-space Frame", frame_lab)
         return frame_lab
 
-    def find_cubes(self, frame, frame_lab, add_contours=True, show_frame=False):
+    def find_cubes(self, frame_lab, frame, add_contours=True, show_frame=False):
         """ Finds a cube in a frame if it exists
-        :params frame: a frame in LAB space that has undergone preprocessing
+        :params frame_lab: a frame in LAB space that has undergone preprocessing
+        :params frame: the original frame
         :params bool add_contours: add contour boxes and text to original image
         :params bool show_frame: show the frame or not
         :return: frame with or without contours, and coordinates in world space of block (returns none if there is no block)
@@ -96,15 +104,12 @@ class Perception():
         
         return frame, (world_x, world_y)
     
-
     def reset(self) -> None:
         """ Reset all defaults, no parameters, returns nothing"""
         self.count = 0
-        self.track = False
         self.get_roi = False
         self.detect_color = 'None'
         self.target_color = ()
-    
  
     @staticmethod
     def getAreaMaxContour(contours):
@@ -122,4 +127,16 @@ class Perception():
 
         return area_max_contour, contour_area_max  # returns the largest contour
 
+
+if __name__ == "__main__":
+    camera = Camera.Camera()
+    p = Perception(camera)
+
+    while True:
+        frame = p.get_frame()
+        frame_preprocessed = p.preprocess(frame)
+        frame_final, coords = p.find_cubes(frame_preprocessed, frame)
+        key = cv2.waitKey(1) 
+        if key == 27:
+            break
     
