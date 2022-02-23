@@ -22,15 +22,20 @@ class MotionPrimitives:
         
     def open_claw(self):
         Board.setBusServoPulse(1, self.servo1 - 280, 500)  # paws open
-        time.sleep(1)
+        time.sleep(2)
 
     def close_claw(self):
-        Board.setBusServoPulse(1, self.servo1 - 200, 500)  # Claws open to drop objects
-        time.sleep(1)
+        Board.setBusServoPulse(1, self.servo1 - 50, 500) 
+        time.sleep(2)
 
     def rotate_gripper(self, angle):
         Board.setBusServoPulse(2, angle, 500)
+        time.sleep(2)
 
+    def reset(self):
+        self.close_claw()
+        self.rotate_gripper(500)
+    
 
 if __name__ == "__main__":
     arm = ArmIK()
@@ -39,3 +44,5 @@ if __name__ == "__main__":
     mp.open_claw()
     mp.close_claw()
     mp.rotate_gripper(90)
+
+    mp.reset()
