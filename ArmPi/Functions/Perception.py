@@ -68,15 +68,18 @@ class Perception():
         return frame_lab
 
     def find_cubes(self, frame_lab, frame, add_contours=True, show_frame=False):
-        """ Finds a cube in a frame if it exists
+        """ Finds all cubes in a frame if it exists
         :params frame_lab: a frame in LAB space that has undergone preprocessing
         :params frame: the original frame
         :params bool add_contours: add contour boxes and text to original image
         :params bool show_frame: show the frame or not
-        :return: frame with or without contours, and coordinates in world space of block (returns none if there is no block)
+        :return: frame with or without contours, and dictionary of coordinates in world space of all blocks (returns none if there is no block)
         """
-        area_max = 0
+        
+        blocks = dict()
+        color_area_max = None
         for i in color_range:  # loop over the "color range" which isn't defined anywhere somehow
+            area_max = 0
             if i in self.target_color:  # and if the color is the target color
                 detect_color = i  # = the target color
                 frame_mask = cv2.inRange(frame_lab, color_range[detect_color][0], color_range[detect_color][1])  # Makes a black and white image where the color of interest (of a block) is between the range making it white and the background black
@@ -85,24 +88,25 @@ class Perception():
                 contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]  # find the outline
                 areaMaxContour, area_max = self.getAreaMaxContour(contours)  # find the largest contour (ideally the block) and return its area
         
-        world_x = None  # if no 
-        world_y = None
-        if area_max > 2500:  # have found the largest area
-            rect = cv2.minAreaRect(areaMaxContour) # places a rectangle around the contour (again ideally the block)
-            box = np.int0(cv2.boxPoints(rect))  # not sure tbh
+            
+            if area_max > 2500:  # have found the largest area
+                rect = cv2.minAreaRect(areaMaxContour) # places a rectangle around the contour (again ideally the block)
+                box = np.int0(cv2.boxPoints(rect))  # not sure tbh
 
-            roi = getROI(box) # get region of interest
-            # get_roi = True 
+                roi = getROI(box) # get region of interest
+                # get_roi = True 
 
-            img_centerx, img_centery = getCenter(rect, roi, self.size, square_length)  # Get the coordinates of the center of the block
-            world_x, world_y = convertCoordinate(img_centerx, img_centery, self.size) # Convert to real world coordinates
-        
-            if add_contours:
-                cv2.drawContours(frame, [box], -1, self.range_rgb[detect_color], 2) # draw contour around the cube of the right color
-                cv2.putText(frame, '(' + str(world_x) + ',' + str(world_y) + ')', (min(box[0, 0], box[2, 0]), box[2, 1] - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.range_rgb[detect_color], 1) # draw center point
-        
-        return frame, (world_x, world_y)
+                img_centerx, img_centery = getCenter(rect, roi, self.size, square_length)  # Get the coordinates of the center of the block
+                world_x, world_y = convertCoordinate(img_centerx, img_centery, self.size) # Convert to real world coordinates
+
+                blocks[i] = (world_x, world_y)
+
+                if add_contours:
+                    cv2.drawContours(frame, [box], -1, self.range_rgb[detect_color], 2) # draw contour around the cube of the right color
+                    cv2.putText(frame, '(' + str(world_x) + ',' + str(world_y) + ')', (min(box[0, 0], box[2, 0]), box[2, 1] - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.range_rgb[detect_color], 1) # draw center point
+
+        return frame, blocks
     
     def reset(self) -> None:
         """ Reset all defaults, no parameters, returns nothing"""
@@ -135,7 +139,7 @@ if __name__ == "__main__":
         frame = p.get_frame()
         if frame is not None:
             frame_preprocessed = p.preprocess(frame)
-            frame_final, coords = p.find_cubes(frame_preprocessed, frame)
+            frame_final, blocks_dict = p.find_cubes(frame_preprocessed, frame)
             cv2.imshow("Final Frame", frame_final)
             key = cv2.waitKey(1) 
             if key == 27:
