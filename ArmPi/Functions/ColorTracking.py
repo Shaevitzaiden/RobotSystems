@@ -373,7 +373,7 @@ def run(img):
                     start_count_t1 = True
                     count = 0
                     center_list = []
-    return img
+    return closed
 
 if __name__ == '__main__':
     init()

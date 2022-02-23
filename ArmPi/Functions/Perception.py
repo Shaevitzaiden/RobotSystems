@@ -28,7 +28,7 @@ class Perception():
         self.count = 0
         self.get_roi = False
         self.detect_color = 'None'
-        self.target_color = ()
+        self.target_color = ('red', 'green', 'blue')
         
         # Camera from which to receive frames
         self.camera = camera
@@ -105,7 +105,6 @@ class Perception():
                     cv2.drawContours(frame, [box], -1, self.range_rgb[detect_color], 2) # draw contour around the cube of the right color
                     cv2.putText(frame, '(' + str(world_x) + ',' + str(world_y) + ')', (min(box[0, 0], box[2, 0]), box[2, 1] - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.range_rgb[detect_color], 1) # draw center point
-
         return frame, blocks
     
     def reset(self) -> None:
@@ -113,7 +112,7 @@ class Perception():
         self.count = 0
         self.get_roi = False
         self.detect_color = 'None'
-        self.target_color = ()
+        self.target_color = ('red','green','blue')
  
     @staticmethod
     def getAreaMaxContour(contours):
@@ -135,6 +134,7 @@ class Perception():
 if __name__ == "__main__":
     camera = Camera.Camera()
     p = Perception(camera)
+    p.reset()
     while True:
         frame = p.get_frame()
         if frame is not None:
