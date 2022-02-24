@@ -131,9 +131,11 @@ if __name__ == "__main__":
     arm = ArmIK()
     mp = Motion(arm)
 
-    mp.move_arm(-8, 25, 10, -30, -30, -90)
-    mp.open_gripper()
-    mp.close_gripper()
-    mp.rotate_gripper(90)
+    # mp.move_arm(-8, 25, 10, -30, -30, -90)
+    # mp.open_gripper()
+    # mp.close_gripper()
+    # mp.rotate_gripper(90)
+    
+    mp.pick_and_place()
 
     mp.reset()

@@ -114,7 +114,7 @@ class Perception():
             frame_final, blocks_dict = self.find_cubes(frame_preprocessed, frame)
             if show:
                 cv2.imshow("Final Frame", frame_final)
-                key = cv2.waitKey(1) 
+                key = cv2.waitKey(1)
             return blocks_dict
 
     def reset(self) -> None:
@@ -146,14 +146,16 @@ if __name__ == "__main__":
     p = Perception(camera)
     p.reset()
     while True:
-        frame = p.get_frame()
-        if frame is not None:
-            frame_preprocessed = p.preprocess(frame)
-            frame_final, blocks_dict = p.find_cubes(frame_preprocessed, frame)
-            cv2.imshow("Final Frame", frame_final)
-            key = cv2.waitKey(1) 
-            if key == 27:
-                break
+        print(p.run())
+    # while True:
+    #     frame = p.get_frame()
+    #     if frame is not None:
+    #         frame_preprocessed = p.preprocess(frame)
+    #         frame_final, blocks_dict = p.find_cubes(frame_preprocessed, frame)
+    #         cv2.imshow("Final Frame", frame_final)
+    #         key = cv2.waitKey(1) 
+    #         if key == 27:
+    #             break
     camera.camera_close()
     cv2.destroyAllWindows()
     
