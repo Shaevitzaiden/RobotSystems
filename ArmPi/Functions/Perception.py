@@ -99,7 +99,7 @@ class Perception():
                 img_centerx, img_centery = getCenter(rect, roi, self.size, square_length)  # Get the coordinates of the center of the block
                 world_x, world_y = convertCoordinate(img_centerx, img_centery, self.size) # Convert to real world coordinates
 
-                blocks[i] = (world_x, world_y)
+                blocks[i] = (world_x, world_y, rect[2])
 
                 if add_contours:
                     cv2.drawContours(frame, [box], -1, self.range_rgb[detect_color], 2) # draw contour around the cube of the right color
@@ -107,6 +107,16 @@ class Perception():
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.range_rgb[detect_color], 1) # draw center point
         return frame, blocks
     
+    def run(self, show=True):
+        frame = self.get_frame()
+        if frame is not None:
+            frame_preprocessed = self.preprocess(frame)
+            frame_final, blocks_dict = self.find_cubes(frame_preprocessed, frame)
+            if show:
+                cv2.imshow("Final Frame", frame_final)
+                key = cv2.waitKey(1) 
+            return blocks_dict
+
     def reset(self) -> None:
         """ Reset all defaults, no parameters, returns nothing"""
         self.count = 0
