@@ -13,7 +13,7 @@ from CameraCalibration.CalibrationConfig import *
 
 
 class Perception():
-    def __init__(self, camera) -> None:
+    def __init__(self) -> None:
         self.range_rgb = {
             'red': (0, 0, 255),
             'blue': (255, 0, 0),
@@ -31,8 +31,12 @@ class Perception():
         self.target_color = ('red', 'green', 'blue')
         
         # Camera from which to receive frames
-        self.camera = camera
+        self.camera = Camera.Camera()
         self.camera.camera_open() 
+        self.reset()
+
+    def __call__(self):
+        return self.run()
 
     def get_frame(self, show_frame=False):
         """ retrieves a frame from the camera
@@ -142,9 +146,7 @@ class Perception():
 
 
 if __name__ == "__main__":
-    camera = Camera.Camera()
-    p = Perception(camera)
-    p.reset()
+    p = Perception()
     while True:
         print(p.run())
     # while True:

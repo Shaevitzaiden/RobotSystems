@@ -14,12 +14,12 @@ from CameraCalibration.CalibrationConfig import *
 
 
 class Motion:
-    def __init__(self, arm) -> None:
+    def __init__(self) -> None:
         # servo position val
         self.servo1 = 500
 
         # IK solver and motion planner/exector
-        self.arm = arm
+        self.arm = ArmIK()
 
         # Arm statuses
         self.is_moving = False
@@ -131,8 +131,7 @@ class Motion:
 
 
 if __name__ == "__main__":
-    arm = ArmIK()
-    mp = Motion(arm)
+    mp = Motion()
 
     # mp.move_arm(-8, 25, 10, -30, -30, -90)
     # mp.open_gripper()
