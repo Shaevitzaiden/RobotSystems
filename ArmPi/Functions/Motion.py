@@ -19,7 +19,11 @@ class MotionPrimitives:
         self.unreachable = False
         self.goal = ()
         self.servo1 = 500
-        
+        self.arm = arm
+
+    def move_arm(self, x, y, z, a0, a1, a2):
+        self.arm.setPitchRangeMoving((x, y, z), a0, a1, a2)
+       
     def open_claw(self):
         Board.setBusServoPulse(1, self.servo1 - 280, 500)  # paws open
         time.sleep(2)
@@ -35,12 +39,14 @@ class MotionPrimitives:
     def reset(self):
         self.close_claw()
         self.rotate_gripper(500)
+        self.move_arm(0, 10, 10, -30, -30, -90)
     
 
 if __name__ == "__main__":
     arm = ArmIK()
     mp = MotionPrimitives(arm)
 
+    mp.move_arm(-8, 25, 10, -30, -30, -90)
     mp.open_claw()
     mp.close_claw()
     mp.rotate_gripper(90)
