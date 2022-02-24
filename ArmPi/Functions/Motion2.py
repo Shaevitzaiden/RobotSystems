@@ -54,7 +54,7 @@ class Motion:
     
     # def sort(self, blocks, order=('red','green','blue')):
 
-    def pick_and_place(self, pose, new_pose):
+    def pick_and_place(self, pose, new_pose, raise_height=5):
         """ Picks up a block and places it somewhere
         :params tuple pose: (x_center, y_center, rotation_angle) for block
         :params tuple new_pose: (x_new, y_new, z_new, rotation_angle) for block 
@@ -70,10 +70,13 @@ class Motion:
         self.rotate_gripper(getAngle(pose[0], pose[1], pose[2]))
 
         # Move into grabbing position
-        self.move_arm(pose[0], pose[1], 0, -90, -90, 0)
+        self.move_arm(pose[0], pose[1], 1.5, -90, -90, 0)
 
         # Close gripper
         self.close_gripper()
+
+        # Lift block
+        self.move_arm(pose[0], pose[1], raise_height, -90, -90, 0)
 
         # Move block to (x, y, z)
         self.move_arm(new_pose[0], new_pose[1], new_pose[2], -90, -90, 0)
@@ -115,7 +118,7 @@ class Motion:
         self.moving = False
 
     def reset(self):
-        self.close_claw()
+        self.close_gripper()
         self.rotate_gripper(500)
         self.move_arm(0, 10, 10, -30, -30, -90)
     
@@ -135,7 +138,6 @@ if __name__ == "__main__":
     # mp.open_gripper()
     # mp.close_gripper()
     # mp.rotate_gripper(90)
-    
-    mp.pick_and_place()
-
+    mp.pick_and_place((-15 + 0.5, 12 - 0.5, -90), (-1.66, 15, 1.5, -62.5))
+    mp.pick_and_place((-1.66, 15, -62.5), (-15 + 0.5, 12 - 0.5, 1.5, -90))
     mp.reset()
