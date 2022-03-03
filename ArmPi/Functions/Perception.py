@@ -4,6 +4,7 @@ import sys
 sys.path.append('/home/aiden/RobotSystems/ArmPi/')
 import cv2
 import time
+import atexit
 import Camera
 from LABConfig import *
 from ArmIK.Transform import *
@@ -14,6 +15,7 @@ from CameraCalibration.CalibrationConfig import *
 
 class Perception():
     def __init__(self) -> None:
+        atexit.register(self.terminate)
         self.range_rgb = {
             'red': (0, 0, 255),
             'blue': (255, 0, 0),
@@ -127,7 +129,11 @@ class Perception():
         self.get_roi = False
         self.detect_color = 'None'
         self.target_color = ('red','green','blue')
- 
+
+    def terminate(self):
+        self.camera.camera_close()
+        cv2.destroyAllWindows()
+    
     @staticmethod
     def getAreaMaxContour(contours):
         contour_area_temp = 0
@@ -148,16 +154,4 @@ class Perception():
 if __name__ == "__main__":
     p = Perception()
     while True:
-        print(p.run())
-    # while True:
-    #     frame = p.get_frame()
-    #     if frame is not None:
-    #         frame_preprocessed = p.preprocess(frame)
-    #         frame_final, blocks_dict = p.find_cubes(frame_preprocessed, frame)
-    #         cv2.imshow("Final Frame", frame_final)
-    #         key = cv2.waitKey(1) 
-    #         if key == 27:
-    #             break
-    camera.camera_close()
-    cv2.destroyAllWindows()
-    
+        print(p())

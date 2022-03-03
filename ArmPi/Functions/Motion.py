@@ -35,7 +35,7 @@ class Motion:
             'blue':  (-15 + 0.5, 0 - 0.5,  1.5),
         }
 
-    def stack(self, blocks, stack_pose=(0, 10, 1.5, 0), order=('red','green','blue')):
+    def stack(self, blocks, stack_pose=(0, 15, 1.5, 0), order=('red','green','blue')):
         """ Sequentially stacks blocks
         :params dict blocks: dictionary of blocks with keys as color and items as poses (x_c, y_c, rotation_angle)
         :params 
@@ -133,10 +133,17 @@ class Motion:
 if __name__ == "__main__":
     mp = Motion()
 
-    # mp.move_arm(-8, 25, 10, -30, -30, -90)
+    mp.move_arm(1, 20, 5, -90, -90, 0) 
+    # mp.reset()
+    # mp.move_arm(-10, 25, 2, 0, 0, -90)
+    # time.sleep(1)
+    # mp.move_arm(10, 10, 5, 0, 0, 0)
+    # time.sleep(1)
+    # mp.move_arm(-10, 10, 10, 0, 0, 0)
+
     # mp.open_gripper()
     # mp.close_gripper()
     # mp.rotate_gripper(90)
-    mp.pick_and_place((-15 + 0.5, 12 - 0.5, -90), (-1.66, 15, 1.5, -62.5))
-    mp.pick_and_place((-1.66, 15, -62.5), (-15 + 0.5, 12 - 0.5, 1.5, -90))
+    # mp.pick_and_place((-15 + 0.5, 12 - 0.5, -90), (-1.66, 15, 1.5, -62.5)
+    # mp.pick_and_place((-1.66, 15, -62.5), (-15 + 0.5, 12 - 0.5, 1.5, -90))
     mp.reset()
