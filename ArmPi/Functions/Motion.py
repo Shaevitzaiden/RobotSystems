@@ -133,7 +133,7 @@ class Motion:
 if __name__ == "__main__":
     mp = Motion()
 
-    mp.move_arm(1, 20, 5, -90, -90, 0) 
+    mp.move_arm(1, 20, 15, 0, -90, 0) 
     # mp.reset()
     # mp.move_arm(-10, 25, 2, 0, 0, -90)
     # time.sleep(1)

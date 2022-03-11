@@ -24,7 +24,7 @@ if __name__ == "__main__":
     # coords = coords.to_numpy()
     coords = np.loadtxt('draw_coords.csv', delimiter=",")
     coords = coords/10
-    coords = np.round(coords)
+    coords = np.round(coords, 2)
     
     coords[:,0] -= 10
     coords[:,1] += 1
@@ -38,12 +38,10 @@ if __name__ == "__main__":
     
     print("Starting Masta' Peace! (˘ ³˘)♥ ")
     
-    arm.move_arm(coords[0,0],coords[0,1],10,0,-180,180)
-    time.sleep(0.5)
-    
+    arm.move_arm(coords[0,0]-7.5,coords[0,1],-1,-90,-90,0)
+    time.sleep(1)
     for i in range(len(coords)):
-        print(f"current coordinates: {coords[i]}")
-        arm.move_arm(coords[i,0],coords[i,1],10,0,-180,180)
-        time.sleep(0.1)
+        arm.move_arm(coords[i,0]-7.5,coords[i,1],-1,-90,-90,0)
         
+    arm.reset()
     print("All done!")

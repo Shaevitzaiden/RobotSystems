@@ -1,5 +1,5 @@
-from PIL import ImageTk, Image, ImageDraw
 import PIL
+from PIL import Image, ImageDraw
 from tkinter import *
 import matplotlib.pyplot as plt
 import numpy as np
@@ -36,7 +36,7 @@ class DoodleInput():
         coords = np.asarray(self.drawing_coords.copy())
         coords[:,1] = -coords[:,1] + 300
         np.savetxt('draw_coords.csv', coords, delimiter=",")
-        self.plot(coords)
+        print(coords)
         # self.output_image.save(filename)
 
     def paint(self, event):
