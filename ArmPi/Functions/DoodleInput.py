@@ -13,11 +13,12 @@ class DoodleInput():
         white = (255, 255, 255) # canvas back
 
         self.drawing_coords = []
+        self.coords = None
 
-        master = Tk()
+        self.root = Tk()
 
         # create a tkinter canvas to draw on
-        self.canvas = Canvas(master, width=width, height=height, bg='white')
+        self.canvas = Canvas(self.root, width=width, height=height, bg='white')
         self.canvas.pack()
 
         # create an empty PIL image and draw object to draw on
@@ -26,18 +27,24 @@ class DoodleInput():
         self.canvas.pack(expand=YES, fill=BOTH)
         self.canvas.bind("<B1-Motion>", self.paint)
 
-        # add a button to save the image
-        button=Button(text="save",command=self.save)
-        button.pack()
+        # add buttons to save or submit the image
+        button_save=Button(text="save",command=self.save).pack(side=LEFT)
+        button_submit=Button(text="submit",command=self.submit).pack(side=RIGHT)
 
-        master.mainloop()
+        self.root.mainloop()
 
     def save(self):
         coords = np.asarray(self.drawing_coords.copy())
         coords[:,1] = -coords[:,1] + 300
         np.savetxt('draw_coords.csv', coords, delimiter=",")
-        print(coords)
-        # self.output_image.save(filename)
+        return coords
+    
+    def submit(self):
+        coords = np.asarray(self.drawing_coords.copy())
+        coords[:,1] = -coords[:,1] + 300
+        self.root.destroy()
+        self.coords = coords
+        return coords
 
     def paint(self, event):
         x1, y1 = (event.x - 1), (event.y - 1)
