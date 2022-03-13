@@ -35,6 +35,9 @@ class DoodleDraw(Motion):
         self.reset()
 
     def _reposition(self, current_point, next_point):
+        # give it a moment to finish previous motion
+        time.sleep(0.5)
+        
         # lift arm
         self.move_arm(current_point[0], current_point[1], 4, -90, -90, 0)
 
